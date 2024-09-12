@@ -88,7 +88,9 @@ fun MyShoppingApp() {
                             singleLine = true,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp)
+                                .padding(8.dp),
+                            label = { Text("Item Name") }, // Adding the label
+                            placeholder = { Text("Enter Item Name") } // Adding the placeholder
 
                         )
                         // Section to enter the item quantity
@@ -97,7 +99,9 @@ fun MyShoppingApp() {
                             singleLine = true,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp)
+                                .padding(8.dp),
+                            label = { Text("Quantity") }, // Adding the label
+                            placeholder = { Text("Enter quantity") } // Adding the placeholder
 
                         )
                     }
