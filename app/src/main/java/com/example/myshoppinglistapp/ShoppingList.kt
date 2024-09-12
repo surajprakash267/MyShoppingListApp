@@ -6,10 +6,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,7 +19,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -37,20 +34,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-data class ShoppingItem(
-    val id : Int,
-    var name : String,
-    var quantity : Int,
-    var isEditing : Boolean = false
+data class ShoppingItem(     // data class defined for shopping item
+    val id : Int,               // parameters of the shopping item data class
+    var name : String,           // parameters of the shopping item data class
+    var quantity : Int,               // parameters of the shopping item data class
+    var isEditing : Boolean = false        // parameters of the shopping item data class
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyShoppingApp() {
     var sItems by remember { mutableStateOf(listOf<ShoppingItem>()) }
     var showDialog by remember { mutableStateOf(false) }
-    var ItemName by remember { mutableStateOf("") }
-    var ItemQuantity by remember { mutableStateOf("") }
+    var itemName by remember { mutableStateOf("") }
+    var itemQuantity by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -65,15 +61,15 @@ fun MyShoppingApp() {
                           .fillMaxWidth()
                           .padding(8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                          Button(onClick = {
-                            if (ItemName.isNotBlank()){
+                            if (itemName.isNotBlank()){
                                 val newItem = ShoppingItem(
                                     id = sItems.size + 1,
-                                    name = ItemName,
-                                    quantity = ItemQuantity.toInt()
+                                    name = itemName,
+                                    quantity = itemQuantity.toInt()
                                 )
                                 sItems = sItems + newItem
                                 showDialog = false
-                                ItemName = ""
+                                itemName = ""
                             }
                          }) {
                              Text(text = "Add")
@@ -87,8 +83,8 @@ fun MyShoppingApp() {
                 text = {
                     Column {
                         // Section to enter the item name
-                        OutlinedTextField(value = ItemName ,
-                            onValueChange = {ItemName = it},
+                        OutlinedTextField(value = itemName ,
+                            onValueChange = {itemName = it},
                             singleLine = true,
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -96,8 +92,8 @@ fun MyShoppingApp() {
 
                         )
                         // Section to enter the item quantity
-                        OutlinedTextField(value = ItemQuantity ,
-                            onValueChange = {ItemQuantity = it},
+                        OutlinedTextField(value = itemQuantity ,
+                            onValueChange = {itemQuantity = it},
                             singleLine = true,
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -122,33 +118,26 @@ fun MyShoppingApp() {
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            items(sItems) {
-                //shoppinglistItem(it,{},{})
-                item ->
-                if (item.isEditing){
-                    ShoppingItemEditor(item = item,
-                        onEditComplete ={
-                            editedName, editedQuantity ->
-                            sItems = sItems.map { it.copy(isEditing = false) }
-                            val editedItem = sItems.find { it.id == item.id }
-                            editedItem ?. let {
-                                it.name = editedName
-                                it.quantity = editedQuantity
-                            }
+            items(sItems) {item ->
+                if(item.isEditing){
+                    ShoppingItemEditor(item = item, onEditComplete = {
+                        editedName, editedQuantity ->
+                        sItems = sItems.map{it.copy(isEditing = false)}
+                        val editedItem = sItems.find { it.id == item.id }
+                        editedItem ?.let {
+                            it.name = editedName
+                            it.quantity = editedQuantity
                         }
 
-                    )
-                } else{
-                    shoppinglistItem(
-                        item = item,
-                        onEditClick = {
-                            // finding out which item we are editing and changing is " isEditing boolean" to true
-                            sItems = sItems.map { it.copy(isEditing = it.id == item.id) }
-                        },onDeleteClick = {
-                            sItems = sItems - item
-                        }
-
-                    )
+                    } )
+                }else{
+                    ShoppinglistItem(item = item, onEditClick={
+                        // finding out which item we arte editing and changing it "isEditing boolean" to true
+                        sItems = sItems.map { it.copy(isEditing = it.id == item.id) }
+                    },
+                        onDeleteClick = {
+                        sItems = sItems-item
+                    } )
                 }
 
             }
@@ -157,7 +146,7 @@ fun MyShoppingApp() {
 }
 
 @Composable
-fun shoppinglistItem(
+fun ShoppinglistItem(
     item: ShoppingItem,
     onEditClick : () -> Unit,
     onDeleteClick : () -> Unit
@@ -176,10 +165,10 @@ fun shoppinglistItem(
         Row (
             modifier = Modifier.padding(8.dp)
         ){
-            IconButton(onClick = { onEditClick}) {
+            IconButton(onClick = onEditClick) {
                 Icon(imageVector = Icons.Default.Edit, contentDescription = null)
             }
-            IconButton(onClick = { onDeleteClick }) {
+            IconButton(onClick = onDeleteClick) {
                 Icon(imageVector = Icons.Default.Delete, contentDescription = null)
             }
         }
@@ -210,19 +199,14 @@ fun ShoppingItemEditor(
                modifier = Modifier
                    .wrapContentSize()
                    .padding(8.dp)
-           ) {
-
-           }
-
+           )
            BasicTextField(value = editedQuantity, //text field for edited quantity
                onValueChange = {editedQuantity = it},
                singleLine = true,
                modifier = Modifier
                    .wrapContentSize()
                    .padding(8.dp)
-           ) {
-
-           }
+           )
        }
        Button(onClick = {
            isEditing = false
